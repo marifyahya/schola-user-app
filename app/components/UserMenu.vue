@@ -5,21 +5,19 @@ defineProps<{
   collapsed?: boolean
 }>()
 
-const { logout } = useAuth()
+const { user, fetchUser, logout } = useAuth()
+
+onBeforeMount(async () => {
+  if (!user.value.name) {
+    await fetchUser()
+  }
+})
 
 const colorMode = useColorMode()
 const appConfig = useAppConfig()
 
 const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
-
-const user = ref({
-  name: 'Benjamin Canac',
-  avatar: {
-    src: 'https://github.com/benjamincanac.png',
-    alt: 'Benjamin Canac'
-  }
-})
 
 const items = computed<DropdownMenuItem[][]>(() => ([[{
   type: 'label',

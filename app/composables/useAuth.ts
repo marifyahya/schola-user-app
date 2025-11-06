@@ -1,26 +1,45 @@
-import { authApi } from '~/api/auth.api'
+import { authApi } from "~/api/auth.api";
 
 export const useAuth = () => {
-    const user = useState<any | null>('user', () => null)
+  const user = ref({
+    name: "",
+    email: "",
+    avatar: {
+      src: "",
+      alt: "",
+    },
+  });
 
-    const token = useCookie<string | null>('token')
+  const token = useCookie<string | null>("token");
 
-    const login = async (email: string, password: string) => {
-        const res = await authApi.login({ email, password })
-        token.value = res.data.access_token
+  const login = async (email: string, password: string) => {
+    const res = await authApi.login({ email, password });
+    token.value = res.data.access_token;
+  };
+
+  const fetchUser = async () => {
+    const res = (await authApi.profile()) as any;
+    const fetchedUser = res.data
+
+    const nameForUrl = encodeURIComponent(fetchedUser.name)
+    const avatarUrl = `https://ui-avatars.com/api/?background=random&name=${nameForUrl}`
+
+    user.value = {
+      ...user.value,
+      name: fetchedUser.name,
+      email: fetchedUser.email,
+      avatar: {
+        src: avatarUrl,
+        alt: fetchedUser.name
+      }
     }
+  };
 
-    const fetchUser = async () => {
-        const res = await authApi.profile() as any
-        user.value = res.data
-    }
+  const logout = () => {
+    token.value = null;
 
-    const logout = () => {
-        token.value = null
-        user.value = null
+    return navigateTo("/login");
+  };
 
-        return navigateTo('/login')
-    }
-
-    return { token, login, user, fetchUser, logout }
-}
+  return { token, login, user, fetchUser, logout };
+};
