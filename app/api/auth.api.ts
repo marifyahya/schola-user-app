@@ -1,15 +1,24 @@
-import { useApi } from '~/api/base'
+import { useApi } from "~/api/base";
 
 export const authApi = {
-    async login(payload: { email: string; password: string }): Promise<any> {
-        const request = useApi()
-        return request('/login', {
-            method: 'POST',
-            body: payload
-        })
-    },
-    async profile() {
-        const request = useApi()
-        return request('/users/profile')
-    }
-}
+  async login(payload: { email: string; password: string }): Promise<any> {
+    const request = useApi();
+    return request("/login", {
+      method: "POST",
+      body: payload,
+    });
+  },
+  async profile() {
+    const request = useApi();
+    return request("/users/profile");
+  },
+  async refreshToken(refreshToken: string): Promise<any> {
+    const request = useApi();
+    return request("/refresh", {
+      method: "POST",
+      headers: {
+        "X-Refresh-Token": refreshToken,
+      },
+    });
+  },
+};
